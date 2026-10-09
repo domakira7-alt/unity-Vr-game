@@ -31,7 +31,8 @@ namespace UISystem
             }).SetEase(Ease.Linear).OnComplete(() => 
             {
                 ViewController.instance.ChangeView(ScreenName.MainMenuScreen);
-                FPSCounter.instance.EnableFPS(true);
+                if (FPSCounter.instance != null)
+                    FPSCounter.instance.EnableFPS(true);
             });
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using StarterKit;
 using UnityEngine;
+using UnityEngine.InputSystem;
 namespace UISystem
 {
 
@@ -136,7 +137,7 @@ namespace UISystem
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 // Check if any popups are open; if not, show exit popup
                 if (activePopups.Count == 0)

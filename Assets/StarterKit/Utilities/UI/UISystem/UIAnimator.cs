@@ -31,7 +31,6 @@ namespace UISystem
         float maxHideWaitTime = 0;
         BaseUI baseUI;
         int maxCounter = 0;
-        private string hideAnimation = "HideAnimation";
         public string showAnimation = "ShowAnimation";
         public void Awake()
         {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace StarterKit.StateMachine
 {
@@ -57,23 +58,26 @@ namespace StarterKit.StateMachine
             // Update the current state
             _stateMachine.Update();
 
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard == null) return;
+
             // Example state transitions based on input
-            if (Input.GetKeyDown(KeyCode.W))
+            if (keyboard.wKey.wasPressedThisFrame)
             {
                 _stateMachine.ChangeState(CharacterState.Walking);
             }
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (keyboard.aKey.wasPressedThisFrame)
             {
                 _stateMachine.ChangeState(CharacterState.Attacking);
             }
-            else if (Input.GetKeyDown(KeyCode.D))
+            else if (keyboard.dKey.wasPressedThisFrame)
             {
                 _stateMachine.ChangeState(CharacterState.Defending);
             }
-            else if (Input.GetKeyDown(KeyCode.I))
+            else if (keyboard.iKey.wasPressedThisFrame)
             {
                 _stateMachine.ChangeState(CharacterState.Idle);
             }
         }
     }
-} 
+}

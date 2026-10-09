@@ -52,7 +52,7 @@ public class BlurRenderPass : ScriptableRenderPass
     if (blurSettings == null || !blurSettings.IsActive() || material == null) return;
     if (renderingData.cameraData.cameraType == CameraType.Preview) return;
 
-    var cmd = CommandBufferPool.Get("Blur Post Process");
+    var cmd = CommandBufferPool.Get(kTag);
 
     // params
     int gridSize = Mathf.CeilToInt(blurSettings.stenght.value * 6f);

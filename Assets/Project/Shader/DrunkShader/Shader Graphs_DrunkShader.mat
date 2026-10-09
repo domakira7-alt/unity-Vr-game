@@ -37,16 +37,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AbbreivationIntensity: 0.35
+    - _AbbreivationIntensity: 0
     - _AbbreivationStrenght: 0.02
     - _Amplitude: 0.75
-    - _Blend: 0.05
-    - _NoiseScale: 15
+    - _Blend: 0
+    - _NoiseScale: 10
     - _PanSpeed: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _OffsetDir: {r: 1, g: 1, b: 0, a: 0}
+    - _OffsetDir: {r: 0, g: 0, b: 0, a: 0}
     - _PanSeped: {r: 0, g: 0, b: 0, a: 0}
     - _PanSpeed: {r: 0.5, g: 0.2, b: 0, a: 0}
   m_BuildTextureStacks: []

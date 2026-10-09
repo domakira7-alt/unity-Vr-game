@@ -33,9 +33,6 @@ namespace UISystem
         [Header("Debug")]
         [SerializeField] private bool isDebugMode = false;
 
-        [SerializeField] private float intenseMusicTriggerTime = 30f;
-        private bool intenseMusicStarted = false;
-
         private Tween precisionTween;
 
         public override void Show()
@@ -97,6 +94,7 @@ namespace UISystem
         [Button("Test Wrong Attempt UI")]
         public void TestWrongAttemptUI()
         {
+            if (!isDebugMode) return;
             int currentWrongAttempt = 0;
             currentWrongAttempt++;
             OnWrongAttemptChanged(currentWrongAttempt, 3);

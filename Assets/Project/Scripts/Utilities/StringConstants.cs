@@ -11,7 +11,7 @@ namespace Yudiz.VRAwarenessExperience.Utilities
         #endregion   
 
         #region TEXT_DATA
-        public static readonly string TEXT_STRING_YOU_WON = "Great Job\nYou have assembled the plane efficiently.";
+        public static readonly string TEXT_STRING_YOU_WON = "MEH\nYou have assembled the plane efficiently.";
         public static readonly string TEXT_STRING_YOU_LOST = "You didn't finish in time.\nTry again to complete the puzzle.";
         public static readonly string TEXT_STRING_EXCEEDED_WRONG_ATTEMPTS = "Attempt limit reached!\nTry again to complete the puzzle. ";
         public static readonly string TEXT_STRING_DEFAULT_LOADING = "Loading...0%";

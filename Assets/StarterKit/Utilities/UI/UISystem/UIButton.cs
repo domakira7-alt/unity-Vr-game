@@ -19,20 +19,10 @@ namespace UISystem
             rectTransform = GetComponent<RectTransform>();
             largeSize = new Vector2(rectTransform.localScale.x * mux, rectTransform.localScale.y * mux);
         }
-        enum PointerState
-        {
-            None,
-            Down,
-            Up
-        }
-
-        PointerState pState = PointerState.None;
-
         public virtual void OnPointerUp(PointerEventData data)
         {
             if (canAnimate && GetComponent<Button>().IsInteractable())
             {
-                pState = PointerState.Up;
                 StopAllCoroutines();
                 StartCoroutine(Animate(largeSize, Vector2.one));
             }
@@ -43,7 +33,6 @@ namespace UISystem
         {
             if (canAnimate && GetComponent<Button>().IsInteractable())
             {
-                pState = PointerState.Down;
                 StopAllCoroutines();
                 StartCoroutine(Animate(Vector2.one, largeSize));
             }

@@ -15,17 +15,6 @@ namespace UISystem
         [SerializeField] private TMP_Text titleText;
         [SerializeField] private TMP_Text descriptionText;
 
-        [SerializeField] private float uiZOffset = 0.8f;
-        [SerializeField] private float alignmentSpeed = 1.1f;
-        private Transform cameraTransform;
-
-
-        public override void Show()
-        {
-            base.Show();
-            cameraTransform = Camera.main.transform;
-        }
-
         public void SetData(string title, string description, bool isTimerBased, float timerDuration)
         {
             titleText.text = title;

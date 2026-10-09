@@ -35,12 +35,9 @@ namespace StarterKit.DialogueSystem
 
         [Header("Debug Settings")]
         [SerializeField] private bool debugMode = true;
-        [SerializeField] private bool showDialogueInConsole = true;
         
         [Header("Skip Settings")]
         [SerializeField] private bool enableSkip = true;
-        [SerializeField] private float skipDelay = 0.5f;
-        [SerializeField] private KeyCode skipKey = KeyCode.Space;
         [SerializeField] private UnityEngine.UI.Button skipButton;
 
         // Runtime data

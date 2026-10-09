@@ -59,7 +59,6 @@ namespace Yudiz.VRAwarenessExperience.Core
 
         [Header("Duration")]
         [HorizontalLine(color: EColor.Yellow)]
-        [SerializeField] private float motionBlurDuration = 1.2f;
         [SerializeField] private float wrongAttemptDuration = 2f;
         [SerializeField] private float dissolveEffectDuration = 2.5f;
         
@@ -344,7 +343,7 @@ namespace Yudiz.VRAwarenessExperience.Core
             }
         }
 
-        private async void OnLevelCompleted()
+        private void OnLevelCompleted()
         {
             timer.Stop();
             SoundManager.instance.StopClockTickSound();
@@ -432,7 +431,7 @@ namespace Yudiz.VRAwarenessExperience.Core
             onComplete?.Invoke();
         }
 
-        private async void OnLevelFailed()
+        private void OnLevelFailed()
         {
             Debug.Log("Level -> OnLevelFailed -> Called!");
             ManageXRPuzzleGrabbables(false);

@@ -8,6 +8,8 @@ namespace UISystem
     public class MainMenuScreen : Screen
     {
         [SerializeField] private Button playButton;
+        [SerializeField] private GameObject registrationPrefab;
+        private PlayerDetailsPopup playerDetailsPopup;
 
         public override void Show()
         {
@@ -18,6 +20,15 @@ namespace UISystem
         private void OnPlayButtonClicked()
         {
             SoundManager.instance.PlaySound(SoundType.UIButtonClick);
+            if (playerDetailsPopup == null)
+            {
+                playerDetailsPopup = new PlayerDetailsPopup(content.transform, StartGameplay, registrationPrefab);
+            }
+            playerDetailsPopup.Show();
+        }
+
+        private void StartGameplay()
+        {
             LevelManager.instance.LoadNextLevel();
             ViewController.instance.ChangeView(ScreenName.GameplayScreen);
         }
@@ -26,6 +37,7 @@ namespace UISystem
         {
             base.Hide();
             playButton.onClick.RemoveListener(OnPlayButtonClicked);
+            playerDetailsPopup?.Hide();
         }
 
     }

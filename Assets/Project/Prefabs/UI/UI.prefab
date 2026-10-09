@@ -5694,6 +5694,7 @@ MonoBehaviour:
   canvas: {fileID: 0}
   canvasGroup: {fileID: 0}
   playButton: {fileID: 3980756369152037759}
+  registrationPrefab: {fileID: 5657930054212480096, guid: f195c68659e6407eb77d871d5c2ae529, type: 3}
 --- !u!114 &1642091808394381268
 MonoBehaviour:
   m_ObjectHideFlags: 0
