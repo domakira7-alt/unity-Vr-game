@@ -25,11 +25,14 @@ namespace UISystem
         [HorizontalLine(color: EColor.Blue)]
         [SerializeField] private Button continueButton;
         [SerializeField] private Button exitButton;
+        private OutcomeMessageLayout messageLayout;
        
 
         public override void Show()
         {
             base.Show();
+            messageLayout?.Refresh();
+            exitButton.onClick.RemoveListener(OnExitButtonClicked);
             exitButton.onClick.AddListener(OnExitButtonClicked);
         }
 
@@ -61,7 +64,7 @@ namespace UISystem
                 }
                 else
                 {
-                    gameOutcomeText.text = StringConstants.TEXT_STRING_YOU_WON;
+                    gameOutcomeText.text = StringConstants.TEXT_STRING_YOU_WON_NORMAL;
                 }
             }
             else
@@ -73,6 +76,9 @@ namespace UISystem
 
 
             continueButtonText.text = hasWon ? StringConstants.TEXT_STRING_CONTINUE : StringConstants.TEXT_STRING_RETRY;
+            if (messageLayout == null)
+                messageLayout = new OutcomeMessageLayout(gameOutcomeText, gameOutcomeImage, continueButton, exitButton);
+            messageLayout.Refresh();
             continueButton.onClick.RemoveAllListeners();
             continueButton.onClick.AddListener(hasWon ? OnContinueButtonClicked : OnRetryButtonClicked);
 
@@ -111,6 +117,7 @@ namespace UISystem
         public override void Hide()
         {
             base.Hide();
+            exitButton.onClick.RemoveListener(OnExitButtonClicked);
             continueButton.onClick.RemoveAllListeners();
         }
     }

@@ -1,12 +1,58 @@
 # VRStarterKit
 
+## Outcome messages
+
+Success and failure messages come from `StringConstants.cs`. The result frame
+measures and wraps each message at a readable font size, expands to fit it, and
+moves the banner and buttons to keep them separated. The current French messages
+fit without scrolling. Messages longer than the canvas can accommodate use a
+masked scrolling area with large **Haut** and **Bas** buttons. The frame shrinks
+again for shorter messages; scrolling resets whenever the result changes.
+
 ## Player registration CSV
 
-Pressing Register with a valid name and email appends one row to `registrations.csv`
-before gameplay starts. Columns: `RegisteredAtUtc,Name,Email`. The date is UTC.
-Every popup opening clears both fields and resets Shift. Cancelling does not save.
+Pressing Register with a valid name and email first submits the registration to
+the configured Google Apps Script endpoint. After its JSON response confirms
+`status: success`, the app appends one row to `registrations.csv` and starts gameplay.
+Columns: `RegisteredAtUtc,Name,Email`. The CSV date is UTC.
+Every popup opening clears both fields. Cancelling does not save.
 If saving fails, the form keeps the entered details and allows another attempt.
 Repeated clicks during submission do not create duplicate rows.
+
+## Google Sheets submission
+
+The URL is configured in `RegistrationSheetClient.Endpoint`. The POST body is
+UTF-8 JSON with `name`, `email`, and `dateTime` (device local time, `yyyy-MM-dd HH:mm`).
+Unity follows Google's redirect and requires a JSON `status` of `success` before
+continuing. Android Internet permission is enabled in Player Settings.
+
+Registration requires Internet. No connection, a connection error, or a timeout
+keeps the form open with `Connexion Internet requise`, retains the entered details,
+and permits retry. A server error also keeps the form open. While submitting, the
+fields, Register and Cancel are disabled to prevent overlapping requests.
+
+If Google confirms saving but the local CSV fails, retry completes only the local
+save; it does not resend the already confirmed Google submission. Admin entry
+continues to open the local admin menu without uploading an admin registration.
+The admin table still displays this device's CSV, rather than the entire Google Sheet.
+
+The endpoint has no documented idempotency key. If a request reaches Google but
+its response is lost, a manual retry may create another Google row. Exactly-once
+submission in that situation requires server-side deduplication.
+
+## Quest system keyboard
+
+The custom keyboard is replaced by the Quest system keyboard. Select either
+registration field with the controller ray to type; the email field requests
+the email keyboard layout. Finish text entry, then press Register.
+
+The Android build hook adds `oculus.software.overlay_keyboard` to Unity's generated
+manifest automatically. The installed Oculus XR plugin enables the keyboard
+overlay and focus awareness. No manual scene configuration is needed.
+
+Build and install the updated Android APK to test the keyboard directly on Quest
+3S. Unity Play mode through Link/Air Link runs on Windows and uses your physical
+PC keyboard; it does not display the standalone Quest system keyboard overlay.
 
 ## Admin registration viewer
 

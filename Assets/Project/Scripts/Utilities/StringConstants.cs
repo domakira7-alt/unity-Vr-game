@@ -11,20 +11,21 @@ namespace Yudiz.VRAwarenessExperience.Utilities
         #endregion   
 
         #region TEXT_DATA
-        public static readonly string TEXT_STRING_YOU_WON = "MEH\nYou have assembled the plane efficiently.";
-        public static readonly string TEXT_STRING_YOU_LOST = "3YAAAAAAAN, MSAAAAALI. You didn't finish in time.\nTry again to complete the puzzle.";
-        public static readonly string TEXT_STRING_EXCEEDED_WRONG_ATTEMPTS = "Attempt limit reached!\nTry again to complete the puzzle. ";
-        public static readonly string TEXT_STRING_DEFAULT_LOADING = "Loading...0%";
-        public static readonly string TEXT_STRING_CONTINUE = "Continue";
-        public static readonly string TEXT_STRING_RETRY = "Retry";
+        public const string TEXT_STRING_YOU_WON_NORMAL = "Bravo, vous avez gagné et dans les temps ! Souvenez-vous à quel point tout est plus facile lorsque vous êtes pleinement conscient.";
+        public static readonly string TEXT_STRING_YOU_WON = "Oui, vous avez réussi la mission… mais à quel prix ?\nCes substances ont des conséquences graves : sur votre santé, votre sécurité, celle de vos collègues et des passagers, ainsi que sur la qualité et la performance de votre travail et, concrètement sur l’entreprise.";
+        public static readonly string TEXT_STRING_YOU_LOST = "Désolé, vous avez échoué…\nCes substances ont des conséquences graves : sur votre santé, votre sécurité, celle de vos collègues et des passagers, ainsi que sur la qualité et la performance de votre travail et, concrètement sur l’entreprise.";
+        public static readonly string TEXT_STRING_EXCEEDED_WRONG_ATTEMPTS = "Désolé, vous avez échoué…\nCes substances ont des conséquences graves : sur votre santé, votre sécurité, celle de vos collègues et des passagers, ainsi que sur la qualité et la performance de votre travail et, concrètement sur l’entreprise.";
+        public static readonly string TEXT_STRING_DEFAULT_LOADING = "Chargement...0 %";
+        public static readonly string TEXT_STRING_CONTINUE = "Continuer";
+        public static readonly string TEXT_STRING_RETRY = "Réessayer";
 
-        public static readonly string TEXT_STRING_WRONG_ATTEMPT_TITLE = "Wrong Attempt";
-        public static readonly string TEXT_STRING_WRONG_ATTEMPT_DESCRIPTION = "You have placed the Puzzle piece in the wrong Slot!";
-        public const string TEXT_STRING_WRONG_ATTEMPT_DESCRIPTION_PILL = "You misplaced it, the pill blurred your judgment.";
+        public static readonly string TEXT_STRING_WRONG_ATTEMPT_TITLE = "Mauvaise tentative";
+        public static readonly string TEXT_STRING_WRONG_ATTEMPT_DESCRIPTION = "Vous avez placé la pièce du puzzle dans le mauvais emplacement !";
+        public const string TEXT_STRING_WRONG_ATTEMPT_DESCRIPTION_PILL = "Vous l’avez mal placée, la pilule a brouillé votre jugement.";
 
-        public const string TEXT_STRING_YOU_WON_SLOW_PILL = "You felt a slight slowdown.\nThat’s how drug use often begins small changes that seem harmless.\nBut every start has a consequence.";
-        public const string TEXT_STRING_YOU_WON_FAST_PILL = "Your reactions slowed, and the puzzle took longer.\nDrugs weaken focus, even when you think you're still in control.";
-        public const string TEXT_STRING_YOU_WON_DRUNK_PILL = "Did you notice the confusion building?\nDrugs don’t just change your mood they disrupt how your brain processes information.";
+        public const string TEXT_STRING_YOU_WON_SLOW_PILL = "Oui, vous avez réussi la mission… mais à quel prix ?\nCes substances ont des conséquences graves : sur votre santé, votre sécurité, celle de vos collègues et des passagers, ainsi que sur la qualité et la performance de votre travail et, concrètement sur l’entreprise.";
+        public const string TEXT_STRING_YOU_WON_FAST_PILL = "Oui, vous avez réussi la mission… mais à quel prix ?\nCes substances ont des conséquences graves : sur votre santé, votre sécurité, celle de vos collègues et des passagers, ainsi que sur la qualité et la performance de votre travail et, concrètement sur l’entreprise.";
+        public const string TEXT_STRING_YOU_WON_DRUNK_PILL = "Oui, vous avez réussi la mission… mais à quel prix ?\nCes substances ont des conséquences graves : sur votre santé, votre sécurité, celle de vos collègues et des passagers, ainsi que sur la qualité et la performance de votre travail et, concrètement sur l’entreprise.";
         #endregion  
 
     }

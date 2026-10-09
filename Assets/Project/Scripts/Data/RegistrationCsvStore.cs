@@ -17,12 +17,12 @@ namespace UISystem
             FilePath = Path.Combine(directory, "registrations.csv");
         }
 
-        public void Save(string name, string email)
+        public void Save(string name, string email, DateTime? registeredAtUtc = null)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException("Name and email are required.");
 
-            string row = DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture) + "," +
+            string row = (registeredAtUtc ?? DateTime.UtcNow).ToString("O", CultureInfo.InvariantCulture) + "," +
                 CsvCell(name.Trim()) + "," + CsvCell(email.Trim()) + "\r\n";
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
             using (var stream = new FileStream(FilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read))

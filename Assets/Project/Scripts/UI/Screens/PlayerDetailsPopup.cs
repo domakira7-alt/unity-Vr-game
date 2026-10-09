@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -22,15 +24,17 @@ namespace UISystem
         private readonly Transform menuContent;
         private readonly Dictionary<GameObject, bool> menuVisibility = new Dictionary<GameObject, bool>();
         private readonly Sprite buttonSprite;
-        private readonly TMP_Text typingLabel;
-        private readonly List<TMP_Text> letterLabels = new List<TMP_Text>();
-        private TMP_InputField selectedField;
-        private bool uppercase;
         private bool submitting;
         private AdminRegistrationPanel adminPanel;
+        private readonly RegistrationSheetClient requestRunner;
+        private readonly IRegistrationUploader uploader;
+        private readonly Button cancelButton;
+        private SheetRegistration pendingRegistration;
+        private DateTime pendingTimestamp;
+        private bool savedOnline;
 
         public PlayerDetailsPopup(Transform parent, Action onSubmit, GameObject registrationPrefab = null,
-            RegistrationCsvStore registrationStore = null)
+            RegistrationCsvStore registrationStore = null, IRegistrationUploader uploader = null)
         {
             GameObject prefab = registrationPrefab != null ? registrationPrefab : Resources.Load<GameObject>("UI/PlayerRegistration");
             if (prefab == null)
@@ -45,6 +49,8 @@ namespace UISystem
             overlay.offsetMin = overlay.offsetMax = Vector2.zero;
             overlay.localPosition = new Vector3(0, 0, -1);
             root = overlay.gameObject;
+            requestRunner = root.AddComponent<RegistrationSheetClient>();
+            this.uploader = uploader ?? requestRunner;
             // Block clicks on the menu while leaving the hangar and table visible.
             overlay.gameObject.AddComponent<Image>().color = Color.clear;
 
@@ -56,6 +62,7 @@ namespace UISystem
             buttonSprite = nameField.GetComponent<Image>().sprite;
             ConfigureField(nameField, 80);
             ConfigureField(emailField, 254);
+            emailField.keyboardType = TouchScreenKeyboardType.EmailAddress;
             RectTransform formPanel = (RectTransform)registration.Find("PopupBG");
             formPanel.anchorMin = formPanel.anchorMax = new Vector2(0.5f, 0.5f);
             formPanel.sizeDelta = new Vector2(1500, 470);
@@ -68,30 +75,9 @@ namespace UISystem
             emailField.onValueChanged.AddListener(_ => Validate());
             startButton.navigation = new Navigation { mode = Navigation.Mode.None };
             startButton.onClick.AddListener(Submit);
-            message = Text("", overlay, new Vector2(-590, 0), new Vector2(430, 75), 26);
-            typingLabel = Text("Typing: Name", overlay, new Vector2(590, 0), new Vector2(420, 75), 30);
-
-            RectTransform keyboard = Rect("VR Keyboard", overlay, new Vector2(0, -270), new Vector2(1500, 520));
-            string[] rows = { "1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm", "@._+-'" };
-            for (int row = 0; row < rows.Length; row++)
-            {
-                string keys = rows[row];
-                for (int column = 0; column < keys.Length; column++)
-                {
-                    string key = keys[column].ToString();
-                    Button keyButton = Button(key, keyboard,
-                        new Vector2((column - (keys.Length - 1) / 2f) * 146, 160 - row * 76),
-                        new Vector2(138, 68), () => Type(uppercase ? key.ToUpperInvariant() : key));
-                    if (char.IsLetter(key[0]))
-                        letterLabels.Add(keyButton.GetComponentInChildren<TMP_Text>());
-                }
-            }
-            Button("Shift", keyboard, new Vector2(-504, -225), new Vector2(240, 64), ToggleCase);
-            Button("Space", keyboard, new Vector2(-252, -225), new Vector2(240, 64), () => Type(" "));
-            Button("Delete", keyboard, new Vector2(0, -225), new Vector2(240, 64), Delete);
-            Button("Clear", keyboard, new Vector2(252, -225), new Vector2(240, 64), () => selectedField.text = "");
-            Button("Next", keyboard, new Vector2(504, -225), new Vector2(240, 64), NextField);
-            Button("Cancel", overlay, new Vector2(810, -495), new Vector2(240, 64), Hide);
+            message = Text("", overlay, new Vector2(0, 58), new Vector2(1200, 50), 26);
+            Text("Select the name or email field to type.", overlay, new Vector2(0, -75), new Vector2(1200, 60), 26);
+            cancelButton = Button("Cancel", overlay, new Vector2(0, -175), new Vector2(300, 80), Hide);
             Hide();
         }
 
@@ -101,11 +87,12 @@ namespace UISystem
             foreach (Transform child in root.transform)
                 child.gameObject.SetActive(adminPanel == null || child.gameObject != adminPanel.Root);
             submitting = false;
+            pendingRegistration = null;
+            savedOnline = false;
+            nameField.interactable = emailField.interactable = true;
+            cancelButton.interactable = true;
             nameField.SetTextWithoutNotify("");
             emailField.SetTextWithoutNotify("");
-            uppercase = false;
-            foreach (TMP_Text label in letterLabels)
-                label.text = label.text.ToLowerInvariant();
             menuVisibility.Clear();
             foreach (Transform child in menuContent)
             {
@@ -123,6 +110,7 @@ namespace UISystem
 
         public void Hide()
         {
+            requestRunner.Cancel();
             nameField.DeactivateInputField();
             emailField.DeactivateInputField();
             root.SetActive(false);
@@ -137,43 +125,15 @@ namespace UISystem
             string email = emailField.text.Trim();
             bool validEmail = Regex.IsMatch(email, @"^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$");
             message.text = !validName ? "Please enter your name." :
-                !validEmail ? "Please enter a valid email address." : "Your details will be saved on this device when you start.";
+                !validEmail ? "Please enter a valid email address." : "Vos informations seront enregistrées avant de commencer.";
             startButton.interactable = validName && validEmail && !submitting;
             return validName && validEmail;
         }
 
         private void SelectField(TMP_InputField field)
         {
-            selectedField = field;
-            typingLabel.text = field == nameField ? "Typing: Name" : "Typing: Email";
             nameField.targetGraphic.color = field == nameField ? new Color(0.65f, 1f, 1f) : Color.white;
             emailField.targetGraphic.color = field == emailField ? new Color(0.65f, 1f, 1f) : Color.white;
-        }
-
-        private void NextField()
-        {
-            TMP_InputField next = selectedField == nameField ? emailField : nameField;
-            SelectField(next);
-            next.ActivateInputField();
-        }
-
-        private void Type(string value)
-        {
-            if (selectedField != null && selectedField.text.Length + value.Length <= selectedField.characterLimit)
-                selectedField.text += value;
-        }
-
-        private void Delete()
-        {
-            if (selectedField != null && selectedField.text.Length > 0)
-                selectedField.text = selectedField.text.Substring(0, selectedField.text.Length - 1);
-        }
-
-        private void ToggleCase()
-        {
-            uppercase = !uppercase;
-            foreach (TMP_Text label in letterLabels)
-                label.text = uppercase ? label.text.ToUpperInvariant() : label.text.ToLowerInvariant();
         }
 
         private void Submit()
@@ -194,21 +154,62 @@ namespace UISystem
                 adminPanel.Show();
                 return;
             }
-            try
+            nameField.DeactivateInputField();
+            emailField.DeactivateInputField();
+            nameField.interactable = emailField.interactable = false;
+            cancelButton.interactable = false;
+            if (!savedOnline)
             {
-                registrationStore.Save(nameField.text, emailField.text);
+                pendingTimestamp = DateTime.UtcNow;
+                pendingRegistration = new SheetRegistration
+                {
+                    name = nameField.text.Trim(),
+                    email = emailField.text.Trim(),
+                    dateTime = pendingTimestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)
+                };
             }
+            message.color = Color.white;
+            message.text = "Enregistrement en cours…";
+            requestRunner.StartCoroutine(SubmitRegistration());
+        }
+
+        private IEnumerator SubmitRegistration()
+        {
+            bool success = savedOnline;
+            string error = null;
+            if (!savedOnline)
+                yield return uploader.Upload(pendingRegistration, (saved, failure) => { success = saved; error = failure; });
+            if (!success)
+            {
+                ShowSubmissionError(error ?? RegistrationSheetClient.InternetAlert);
+                yield break;
+            }
+            savedOnline = true;
+            bool savedLocally = true;
+            try { registrationStore.Save(pendingRegistration.name, pendingRegistration.email, pendingTimestamp); }
             catch (Exception exception)
             {
-                submitting = false;
-                startButton.interactable = true;
-                message.text = "Could not save your details. Please try Register again.";
+                savedLocally = false;
                 Debug.LogError("Registration could not be saved to " + registrationStore.FilePath + ": " + exception.Message);
-                return;
+            }
+            if (!savedLocally)
+            {
+                ShowSubmissionError("Enregistré en ligne. Réessayez pour terminer la sauvegarde locale.");
+                yield break;
             }
             Debug.Log("Registration saved to " + registrationStore.FilePath);
             Hide();
             onSubmit();
+        }
+
+        private void ShowSubmissionError(string error)
+        {
+            submitting = false;
+            startButton.interactable = true;
+            cancelButton.interactable = true;
+            nameField.interactable = emailField.interactable = !savedOnline;
+            message.color = new Color(1f, 0.65f, 0.4f);
+            message.text = error;
         }
 
         private static void ConfigureField(TMP_InputField field, int limit)
@@ -216,7 +217,11 @@ namespace UISystem
             field.characterLimit = limit;
             field.lineType = TMP_InputField.LineType.SingleLine;
             field.richText = false;
-            field.shouldHideSoftKeyboard = true;
+            // TMP opens and synchronizes the Quest overlay through TouchScreenKeyboard.
+            field.shouldHideSoftKeyboard = false;
+            field.shouldHideMobileInput = false;
+            field.keyboardType = TouchScreenKeyboardType.Default;
+            field.restoreOriginalTextOnEscape = false;
             field.customCaretColor = true;
             field.caretColor = Color.white;
             field.textComponent.raycastTarget = false;
